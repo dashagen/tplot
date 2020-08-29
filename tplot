@@ -1,0 +1,214 @@
+#!/usr/bin/perl -w
+
+use Term::ANSIColor; 
+use Getopt::Std;
+
+$0 =~/.*\/(.*)/;
+
+my %options= ();
+getopts("f:s:y:h",\%options);
+
+die"\nUsage: $1 [-s \"hieght,width\"] [-y\"min,max\"][-f format][file]\n" if (defined $options{"h"});
+
+
+# Screen matrix size 
+my $width = 100; 
+my $height = 13;
+
+
+# Handling size option -s 
+if (defined $options{s}) {
+
+    my @items = split(",", $options{s});
+
+    if (@items == 1) { 
+        $height = $items[0];
+
+    } elsif ( @items == 2) {
+        if ($items[0] ne "") {
+            $height = $items[0];
+            $width = $items[1]; 
+
+        } else {
+            $width = $items[1];
+        }
+    }
+}
+
+
+# Read data
+my @matrix = ();
+my $max = -1e32; 
+my $min = 1e32;
+
+for (<>) {
+    chomp $_;
+
+    my @items = split(" ", $_);
+
+    for (my $i=0;$i<@items; $i++ ) {
+
+        push @{$matrix[$i]}, $items[$i];
+
+        if ($items[$i]>$max) { $max = $items[$i] }; 
+        if ($items[$i]<$min) { $min = $items[$i] };
+    }
+}
+
+my $num_obs = scalar @{$matrix[0]};
+my $num_series = scalar @matrix;
+
+
+# Handling y-axis option -y 
+if (defined $options{y}) {
+
+   my @items = split(",", $options{y});
+
+   if (@items == 1) { 
+       $min = $items[0];
+
+   } elsif (@items == 2) { 
+       if ($items[0] ne "") { 
+           $min = $items[0];
+           $max = $items[1]; 
+
+       } else {
+           $max = $items[1];
+       }
+   }
+}
+
+
+# spacing set up
+my $spacing = $width / $num_obs;
+
+
+# fill up screen matrix 
+my @screen = 0;
+
+for (my $s=0; $s < $num_series; $s++) {
+
+    for (my $i=0; $i<$num_obs; $i++) {
+
+        my $r_index = int( ($matrix[$s][$i] - $min) / ($max - $min) * $height);
+
+        $r_index = $r_index - 1 if ($r_index >= $height); 
+        $r_index = ($height - 1) - $r_index;
+
+        my $c_index = int( ($i+1)*$spacing) - 1;
+
+        if (defined $screen[$r_index][$c_index]) {
+            $screen[$r_index][$c_index] = 9;
+        } else {
+            $screen[$r_index][$c_index] = $s;
+        }
+    }
+}
+
+
+# Determine y axis format 
+my $indent = " "x9;
+
+my $ytick_label_max;
+my $ytick_label_min;
+
+if (defined $options{f}) {
+    $ytick_label_max = formatLabel($options{f}, $max); 
+    $ytick_label_min = formatLabel($options{f}, $min);
+} else {
+    $ytick_label_max = formatLabel("", $max); 
+    $ytick_label_min = formatLabel("", $min);
+}
+
+
+# Plot 
+print "\n";
+
+for (my $r=0; $r<$height; $r++) {
+
+    # Ytick mark label 
+    print color "white";
+
+    if ( $r == 0 ) {
+        print $ytick_label_max."|";
+
+    } elsif ( $r == $height - 1) {
+        print $ytick_label_min."|";
+    }
+    else {
+        print $indent."|";
+    }
+
+
+    # print the row
+    for (my $c=0; $c < $width; $c++) {
+
+        if (defined $screen[$r][$c]) {
+
+            if ( $screen[$r][$c] == 0 ) {
+                print color "bright_blue"; 
+                print "o";
+
+            } elsif ($screen[$r][$c] == 1){
+                print color "yellow"; 
+                print "o";
+
+            } elsif ($screen[$r][$c] == 2){
+                print color "bright_red"; 
+                print "o";
+                
+            } else {
+                print color "green"; 
+                print "x";
+            }
+
+        } else {
+            print " ";
+        }
+    }
+
+    # next row
+    print "\n";
+}
+
+print color "white";
+
+
+# Print x-axis
+my $n_labels = int($width/10+0.5);
+my $xaxis = qw(----!----|) x $n_labels; 
+print $indent."|". $xaxis."\n";
+
+
+# Print x-axis labels 
+my $xtick_label = " " x (($n_labels + 1)*10);
+
+for ($i=1; $i<=$n_labels; $i++) {
+    my $pos = $i*10 - 1;
+    my $num = sprintf("%-3.1f", (($pos+1)/ $spacing )); 
+    substr($xtick_label, $pos, 4) = $num;
+}
+
+print $indent."0". $xtick_label."\n";
+
+
+
+####################################
+#  subroutines ####################
+####################################
+sub formatLabel {
+    my ($format, $value) = @_;
+
+    if ( $format eq "m" ) {
+        $value = $value / 1e6; 
+        return(sprintf("%8.1fM", $value));
+
+    } elsif ( $format eq "p" ) {
+        $value = $value * 100; 
+        return(sprintf("%8.2f", $value));
+
+    } else {
+        return(sprintf("%9.2e", $value));
+    }
+}
+
