@@ -124,6 +124,8 @@ if (defined $options{f}) {
 # Plot 
 print "\n";
 
+my @colors = ('bright_blue', 'bright_red', 'yellow', 'bright_cyan', 'green');
+
 for (my $r=0; $r<$height; $r++) {
 
     # Ytick mark label 
@@ -145,21 +147,15 @@ for (my $r=0; $r<$height; $r++) {
 
         if (defined $screen[$r][$c]) {
 
-            if ( $screen[$r][$c] == 0 ) {
-                print color "bright_blue"; 
-                print "o";
+            my $dot_num = $screen[$r][$c];
 
-            } elsif ($screen[$r][$c] == 1){
-                print color "yellow"; 
-                print "o";
-
-            } elsif ($screen[$r][$c] == 2){
-                print color "bright_red"; 
-                print "o";
-                
-            } else {
-                print color "green"; 
+            if ( $dot_num == 9 ) {
+                print color "green";
                 print "x";
+
+            } else {
+                print color $colors[$dot_num];
+                print "o";
             }
 
         } else {
@@ -190,6 +186,16 @@ for ($i=1; $i<=$n_labels; $i++) {
 }
 
 print $indent."0". $xtick_label."\n";
+
+
+# Print Legends
+print $indent." ";
+
+for ( 1 .. $num_series) {
+    print color $colors[$_-1];
+    print "o- $_ ";
+}
+print "\n";
 
 
 
