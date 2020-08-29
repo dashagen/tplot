@@ -6,10 +6,20 @@ use Getopt::Std;
 $0 =~/.*\/(.*)/;
 
 my %options= ();
-getopts("f:s:y:h",\%options);
+getopts("f:s:y:l:h",\%options);
 
-die "\nUsage: $1 [-s \"hieght,width\"] [-y\"min,max\"][-f format][file]\n" if (defined $options{"h"});
+die "\nUsage: $1 [-s \"hieght,width\"] [-y\"min,max\"][-f format] [-l \"legend1, legend2, ..\"] [file]\n" if (defined $options{"h"});
 
+# Record legends;
+my @legends = ();
+
+if (defined $options{l}) {
+
+    for ( split(",", $options{l}) ){
+
+        push @legends, $_;
+    }
+}
 
 # Screen matrix size 
 my $width = 100; 
@@ -196,11 +206,18 @@ print $indent."0". $xtick_label."\n";
 
 
 # Print Legends
-print $indent." ";
+print $indent." "x19;
 
 for ( 1 .. $num_series) {
+
     print color $colors[$_-1];
-    print "o- $_ ";
+
+    if (defined $legends[$_-1]) {
+        print "o - $legends[$_-1] ";
+
+    } else {
+        print "o - $_ ";
+    }
 }
 print "\n";
 
