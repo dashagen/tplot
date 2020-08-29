@@ -138,11 +138,37 @@ if (defined $options{f}) {
 }
 
 
-# Plot 
+
+##########################
+##  Plot(print)      #### 
+##########################
 print "\n";
 
 my @colors = ('bright_blue', 'bright_red', 'yellow', 'bright_cyan', 'bright_green');
 
+
+# Print Legends
+my $leg_start_point = $width - ( length(join("", @legends)) + 5 * $num_series + ($num_series - @legends)) + 1;
+
+if ( $leg_start_point <0) { $leg_start_point = 0 };
+
+print $indent." "." "x ($leg_start_point);
+
+for ( 1 .. $num_series) {
+
+    print color $colors[$_-1];
+
+    if (defined $legends[$_-1]) {
+        print "o - $legends[$_-1] ";
+
+    } else {
+        print "o - $_ ";
+    }
+}
+print "\n";
+
+
+# Print main plot
 for (my $r=0; $r<$height; $r++) {
 
     # Ytick mark label 
@@ -205,21 +231,6 @@ for ($i=1; $i<=$n_labels; $i++) {
 print $indent."0". $xtick_label."\n";
 
 
-# Print Legends
-print $indent." "x19;
-
-for ( 1 .. $num_series) {
-
-    print color $colors[$_-1];
-
-    if (defined $legends[$_-1]) {
-        print "o - $legends[$_-1] ";
-
-    } else {
-        print "o - $_ ";
-    }
-}
-print "\n";
 
 
 
