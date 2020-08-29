@@ -8,7 +8,7 @@ $0 =~/.*\/(.*)/;
 my %options= ();
 getopts("f:s:y:h",\%options);
 
-die"\nUsage: $1 [-s \"hieght,width\"] [-y\"min,max\"][-f format][file]\n" if (defined $options{"h"});
+die "\nUsage: $1 [-s \"hieght,width\"] [-y\"min,max\"][-f format][file]\n" if (defined $options{"h"});
 
 
 # Screen matrix size 
@@ -84,7 +84,7 @@ my $spacing = $width / $num_obs;
 
 
 # fill up screen matrix 
-my @screen = 0;
+my @screen = ();
 
 for (my $s=0; $s < $num_series; $s++) {
 
