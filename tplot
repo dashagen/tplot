@@ -84,7 +84,8 @@ my $spacing = $width / $num_obs;
 
 
 # fill up screen matrix 
-my @screen = ();
+my @screen   = ();
+my @crossing = ();
 
 for (my $s=0; $s < $num_series; $s++) {
 
@@ -98,7 +99,13 @@ for (my $s=0; $s < $num_series; $s++) {
         my $c_index = int( ($i+1)*$spacing) - 1;
 
         if (defined $screen[$r_index][$c_index]) {
-            $screen[$r_index][$c_index] = 9;
+
+            if ($s > $screen[$r_index][$c_index]) {
+
+                $screen[$r_index][$c_index]   = $s;
+                $crossing[$r_index][$c_index] = $s;
+            }
+
         } else {
             $screen[$r_index][$c_index] = $s;
         }
@@ -124,7 +131,7 @@ if (defined $options{f}) {
 # Plot 
 print "\n";
 
-my @colors = ('bright_blue', 'bright_red', 'yellow', 'bright_cyan', 'green');
+my @colors = ('bright_blue', 'bright_red', 'yellow', 'bright_cyan', 'bright_green');
 
 for (my $r=0; $r<$height; $r++) {
 
@@ -147,14 +154,14 @@ for (my $r=0; $r<$height; $r++) {
 
         if (defined $screen[$r][$c]) {
 
-            my $dot_num = $screen[$r][$c];
+            my $dot_series_num = $screen[$r][$c];
 
-            if ( $dot_num == 9 ) {
-                print color "green";
+            if ( defined $crossing[$r][$c] ) {
+                print color $colors[$dot_series_num];
                 print "x";
 
             } else {
-                print color $colors[$dot_num];
+                print color $colors[$dot_series_num];
                 print "o";
             }
 
