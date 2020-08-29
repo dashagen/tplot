@@ -2,6 +2,7 @@
 
 use Term::ANSIColor; 
 use Getopt::Std;
+use List::Util qw[min max];
 
 $0 =~/.*\/(.*)/;
 
@@ -48,8 +49,8 @@ if (defined $options{s}) {
 
 # Read data
 my @matrix = ();
-my $max = -1e32; 
-my $min = 1e32;
+my $global_max = -1e32; 
+my $global_min = 1e32;
 
 for (<>) {
     chomp $_;
@@ -60,8 +61,8 @@ for (<>) {
 
         push @{$matrix[$i]}, $items[$i];
 
-        if ($items[$i]>$max) { $max = $items[$i] }; 
-        if ($items[$i]<$min) { $min = $items[$i] };
+        if ($items[$i]>$global_max) { $global_max = $items[$i] }; 
+        if ($items[$i]<$global_min) { $global_min = $items[$i] };
     }
 }
 
@@ -75,15 +76,15 @@ if (defined $options{y}) {
    my @items = split(",", $options{y});
 
    if (@items == 1) { 
-       $min = $items[0];
+       $global_min = $items[0];
 
    } elsif (@items == 2) { 
        if ($items[0] ne "") { 
-           $min = $items[0];
-           $max = $items[1]; 
+           $global_min = $items[0];
+           $global_max = $items[1]; 
 
        } else {
-           $max = $items[1];
+           $global_max = $items[1];
        }
    }
 }
@@ -101,7 +102,7 @@ for (my $s=0; $s < $num_series; $s++) {
 
     for (my $i=0; $i<$num_obs; $i++) {
 
-        my $r_index = int( ($matrix[$s][$i] - $min) / ($max - $min) * $height);
+        my $r_index = int( ($matrix[$s][$i] - $global_min) / ($global_max - $global_min) * $height);
 
         $r_index = $r_index - 1 if ($r_index >= $height); 
         $r_index = ($height - 1) - $r_index;
@@ -130,11 +131,11 @@ my $ytick_label_max;
 my $ytick_label_min;
 
 if (defined $options{f}) {
-    $ytick_label_max = formatLabel($options{f}, $max); 
-    $ytick_label_min = formatLabel($options{f}, $min);
+    $ytick_label_max = formatLabel($options{f}, $global_max); 
+    $ytick_label_min = formatLabel($options{f}, $global_min);
 } else {
-    $ytick_label_max = formatLabel("", $max); 
-    $ytick_label_min = formatLabel("", $min);
+    $ytick_label_max = formatLabel("", $global_max); 
+    $ytick_label_min = formatLabel("", $global_min);
 }
 
 
@@ -148,7 +149,14 @@ my @colors = ('bright_blue', 'bright_red', 'yellow', 'bright_cyan', 'bright_gree
 
 
 # Print Legends
-my $leg_start_point = $width - ( length(join("", @legends)) + 5 * $num_series + ($num_series - @legends)) + 1;
+my $leg_start_point;
+
+if (@legends > $num_series ) {
+    $leg_start_point = $width - ( length(join("", @legends[0..$num_series-1])) + 5 * $num_series) + 1;
+
+} else {
+    $leg_start_point = $width - ( length(join("", @legends)) + 5 * $num_series + ($num_series - @legends)) + 1;
+}
 
 if ( $leg_start_point <0) { $leg_start_point = 0 };
 
