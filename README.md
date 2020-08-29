@@ -1,5 +1,5 @@
 ## Introduction
-**tplot** is a perl script for minimalistic terminal plotting which is primarily designed for line plots for not more than 3 series. After all it's terminal plotting, any more sophisticated plotting options will not fare well even if equipped. 
+**tplot** is a perl script for minimalistic terminal plotting which is primarily designed for line plots for not more than 3 series. After all it's terminal plotting, any sophisticated plotting options will not fare well even if equipped. 
 
 ## Usage
 ```bash
