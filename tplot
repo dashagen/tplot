@@ -102,10 +102,7 @@ for (my $s=0; $s < $num_series; $s++) {
 
     for (my $i=0; $i<$num_obs; $i++) {
 
-        my $r_index = int( ($matrix[$s][$i] - $global_min) / ($global_max - $global_min) * $height);
-
-        $r_index = $r_index - 1 if ($r_index >= $height); 
-        $r_index = ($height - 1) - $r_index;
+        my $r_index = getRowIndex($matrix[$s][$i], $global_min, $global_max, $height);
 
         my $c_index = int( ($i+1)*$spacing) - 1;
 
@@ -122,6 +119,9 @@ for (my $s=0; $s < $num_series; $s++) {
         }
     }
 }
+
+# Zero line
+my $zero_index = getRowIndex(0, $global_min, $global_max, $height);
 
 
 # Determine y axis format 
@@ -209,6 +209,9 @@ for (my $r=0; $r<$height; $r++) {
                 print "o";
             }
 
+        } elsif ( $r == $zero_index and $c%2 == 0 ) {
+            print color "bright_black";
+            print "-";
         } else {
             print " ";
         }
@@ -240,8 +243,6 @@ print $indent."0". $xtick_label."\n";
 
 
 
-
-
 ####################################
 #  subroutines ####################
 ####################################
@@ -259,5 +260,22 @@ sub formatLabel {
     } else {
         return(sprintf("%9.2e", $value));
     }
+}
+
+
+sub getRowIndex {
+
+    my ($value, $min, $max, $height) = @_;
+
+    my $t_min = $min - ($max - $min)/ ($height-1)/2;
+    my $t_max = $max + ($max - $min)/ ($height-1)/2;
+
+    my $index = int(  ($value - $t_min ) / ($t_max - $t_min) * $height ); 
+
+    if ( $index >= $height ) {
+        $index = $index - 1;
+    }
+
+    return( $height - 1 -  $index );
 }
 
