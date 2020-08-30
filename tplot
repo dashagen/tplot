@@ -90,10 +90,6 @@ if (defined $options{y}) {
 }
 
 
-# spacing set up
-my $spacing = $width / $num_obs;
-
-
 # fill up screen matrix 
 my @screen   = ();
 my @crossing = ();
@@ -102,9 +98,9 @@ for (my $s=0; $s < $num_series; $s++) {
 
     for (my $i=0; $i<$num_obs; $i++) {
 
-        my $r_index = getRowIndex($matrix[$s][$i], $global_min, $global_max, $height);
+        my $r_index = $height - 1 - getGridIndex($matrix[$s][$i], $global_min, $global_max, $height);
 
-        my $c_index = int( ($i+1)*$spacing) - 1;
+        my $c_index = getGridIndex($i, 0, $num_obs-1, $width);
 
         if (defined $screen[$r_index][$c_index]) {
 
@@ -121,7 +117,7 @@ for (my $s=0; $s < $num_series; $s++) {
 }
 
 # Zero line
-my $zero_index = getRowIndex(0, $global_min, $global_max, $height);
+my $zero_index = getGridIndex(0, $global_min, $global_max, $height);
 
 
 # Determine y axis format 
@@ -227,25 +223,25 @@ print color "white";
 # Print x-axis
 my $n_labels = int($width/10+0.5);
 my $xaxis = qw(----!----|) x $n_labels; 
-print $indent."|". $xaxis."\n";
+print $indent."|-". $xaxis."\n";
 
 
 # Print x-axis labels 
-my $xtick_label = " " x (($n_labels + 1)*10);
+my $xtick_label = "0" . " " x (($n_labels + 1)*10);
 
 for ($i=1; $i<=$n_labels; $i++) {
-    my $pos = $i*10 - 1;
-    my $num = sprintf("%-3.1f", (($pos+1)/ $spacing )); 
-    substr($xtick_label, $pos, 4) = $num;
+    my $num = sprintf("%-3.1f", getRefValue($i*10, 0, $num_obs-1, $width)); 
+    substr($xtick_label, $i*10 -1 , 4) = $num;
 }
 
-print $indent."0". $xtick_label."\n";
+print $indent." ". $xtick_label."\n";
 
 
 
 ####################################
 #  subroutines ####################
 ####################################
+#
 sub formatLabel {
     my ($format, $value) = @_;
 
@@ -263,19 +259,25 @@ sub formatLabel {
 }
 
 
-sub getRowIndex {
+sub getGridIndex {
 
-    my ($value, $min, $max, $height) = @_;
+    my ($value, $min, $max, $num_grid) = @_;
 
-    my $t_min = $min - ($max - $min)/ ($height-1)/2;
-    my $t_max = $max + ($max - $min)/ ($height-1)/2;
+    my $half_buck_size  = ($max - $min)/ ($num_grid - 1) / 2;
 
-    my $index = int(  ($value - $t_min ) / ($t_max - $t_min) * $height ); 
+    my $index = int(  ($value - $min + $half_buck_size ) / ($max - $min) * ($num_grid-1) ); 
 
-    if ( $index >= $height ) {
-        $index = $index - 1;
-    }
-
-    return( $height - 1 -  $index );
+    return( $index );
 }
+
+
+sub getRefValue {
+
+    my ($index, $min, $max, $num_grid) = @_;
+
+    my $value = $index / ($num_grid - 1) * ($max - $min) + $min;
+
+    return( $value );
+}
+
 
