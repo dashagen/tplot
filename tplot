@@ -117,7 +117,7 @@ for (my $s=0; $s < $num_series; $s++) {
 }
 
 # Zero line
-my $zero_index = getGridIndex(0, $global_min, $global_max, $height);
+my $zero_index = $height - 1 - getGridIndex(0, $global_min, $global_max, $height);
 
 
 # Determine y axis format 
