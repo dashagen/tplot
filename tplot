@@ -179,13 +179,16 @@ for (my $r=0; $r<$height; $r++) {
     print color "white";
 
     if ( $r == 0 ) {
-        print $ytick_label_max."|";
+        print $ytick_label_max." ";
 
     } elsif ( $r == $height - 1) {
-        print $ytick_label_min."|";
+        print $ytick_label_min." ";
+
+    } elsif ( $r == $zero_index) {
+        print " "x8 . "0 ";
     }
     else {
-        print $indent."|";
+        print $indent." ";
     }
 
 
@@ -205,9 +208,15 @@ for (my $r=0; $r<$height; $r++) {
                 print "o";
             }
 
-        } elsif ( $r == $zero_index and $c%2 == 0 ) {
+        } elsif ( $r == $zero_index and $c == 0 ) {
+            print color "white";
+            print "+";
+        } elsif ( $r == $zero_index and $c%2 == 0) {
             print color "bright_black";
             print "-";
+        } elsif ( $c == 0 ) {
+            print color "white";
+            print "|";
         } else {
             print " ";
         }
@@ -223,7 +232,7 @@ print color "white";
 # Print x-axis
 my $n_labels = int($width/10+0.5);
 my $xaxis = qw(----!----|) x $n_labels; 
-print $indent."|-". $xaxis."\n";
+print $indent." |". $xaxis."\n";
 
 
 # Print x-axis labels 
