@@ -252,20 +252,19 @@ for (my $r=0; $r<$height; $r++) {
 print color "white";
 
 
-# Print x-axis
-my $n_labels = int($width/10+0.5);
-my $xaxis = qw(----!----|) x $n_labels; 
-print $indent." |". $xaxis."\n";
+# Print x-axis and tick marks
+my $xaxis = "-" x $width;
+my $xtick_label = " " x $width;
 
+my $step = max(1, int($num_obs / 10) );
 
-# Print x-axis labels 
-my $xtick_label = "0" . " " x (($n_labels + 1)*10);
-
-for ($i=1; $i<=$n_labels; $i++) {
-    my $num = sprintf("%-3.1f", getRefValue($i*10, 0, $num_obs-1, $width)); 
-    substr($xtick_label, $i*10 -1 , 4) = $num;
+for ($i=0; $i<$num_obs; $i=$i+$step) {
+    my $index = getGridIndex($i, 0, $num_obs-1, $width);
+    substr($xaxis, $index , 1) = "|";
+    substr($xtick_label, $index , 4) = sprintf("%-4d", $i);
 }
 
+print $indent." ". $xaxis."\n";
 print $indent." ". $xtick_label."\n";
 
 
