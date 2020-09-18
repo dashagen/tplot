@@ -146,6 +146,8 @@ for (my $s=0; $s < $num_series; $s++) {
 
     for (my $i=0; $i<$num_obs; $i++) {
 
+        next if ( $matrix[$s][$i] > $global_max or $matrix[$s][$i] < $global_min ); 
+
         my $r_index = $height - 1 - getGridIndex($matrix[$s][$i], $global_min, $global_max, $height);
 
         my $c_index = getGridIndex($i, 0, $num_obs-1, $width);
