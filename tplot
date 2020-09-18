@@ -7,9 +7,18 @@ use List::Util qw[min max];
 $0 =~/.*\/(.*)/;
 
 my %options= ();
-getopts("f:s:y:l:h",\%options);
+getopts("r:f:s:y:l:h",\%options);
 
-die "\nUsage: $1 [-s \"hieght,width\"] [-y\"min,max\"][-f format] [-l \"legend1, legend2, ..\"] [file]\n" if (defined $options{"h"});
+
+# Exit if -h is typed or -r is not used
+if (defined $options{"h"} or not( defined $options{r})) {
+
+    die "\nUsage: $1 -r col1[,col2,..] [-s \"hieght,width\"] [-y\"min,max\"][-f format] [-l \"legend1, legend2, ..\"] [file]\n";
+}
+
+# Get row numbers
+my @col_nums   = split(",", $options{r});
+my $num_series = scalar @col_nums;
 
 
 # Record legends;
@@ -59,17 +68,18 @@ for (<>) {
 
     my @items = split(" ", $_);
 
-    for (my $i=0;$i<@items; $i++ ) {
+    for (my $i=0;$i<$num_series; $i++ ) {
 
-        push @{$matrix[$i]}, $items[$i];
+        my $value = $items[ $col_nums[$i] - 1 ];
 
-        if ($items[$i]>$global_max) { $global_max = $items[$i] }; 
-        if ($items[$i]<$global_min) { $global_min = $items[$i] };
+        push @{$matrix[$i]}, $value;
+
+        if ($value > $global_max) { $global_max = $value }; 
+        if ($value < $global_min) { $global_min = $value };
     }
 }
 
 my $num_obs = scalar @{$matrix[0]};
-my $num_series = scalar @matrix;
 
 
 
