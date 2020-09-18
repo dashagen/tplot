@@ -2,19 +2,21 @@
 
 use Term::ANSIColor; 
 use Getopt::Std;
+use Pod::Usage;
 use List::Util qw[min max];
 
 $0 =~/.*\/(.*)/;
 
 my %options= ();
-getopts("r:f:s:y:l:h",\%options);
+getopts("b:r:f:s:y:l:h",\%options);
 
 
 # Exit if -h is typed or -r is not used
-if (defined $options{"h"} or not( defined $options{r})) {
+if (defined $options{"h"} || not( defined $options{r})) {
 
-    die "\nUsage: $1 -r col1[,col2,..] [-s \"hieght,width\"] [-y\"min,max\"][-f format] [-l \"legend1, legend2, ..\"] [file]\n";
+   pod2usage(-verbose=>2, -noperldoc=>1);
 }
+
 
 # Get row numbers
 my @col_nums   = split(",", $options{r});
@@ -337,3 +339,55 @@ sub commify {
     $text =~ s/(\d\d\d)(?=\d)(?!\d*\.)/$1,/g;
     return scalar reverse $text;
 }
+
+
+
+############################
+### Usage Page         #####
+############################
+
+__END__
+
+=head1 NAME
+
+tplot - A simple terminal plotting tool
+
+=head1 SYNOPSIS
+
+tplot -r col1[,col2,..] [-s hieght,width] [-y min,max] [-f format] [-l legend1, legend2, ..] [file]
+
+
+=head1 OPTIONS
+
+The following options are supported:
+
+=over 12
+
+=item B<-h>
+
+Print this help message.
+
+=item B<-r> col1[,col2,..]
+
+List the column numbers to be included in the plot.
+
+=item B<-s> height,width
+
+The size of the plotting area. Default height is 15 and default width is 100.
+
+=item B<-y> min,max
+
+min and max of the y axis.
+
+=item B<-f> format
+
+Format of the y-axis label. If not selected, it will be decided based on the max absolute value of the input. "m" for millions. "p" for percentage. "k" for thousands.
+
+=item B<-l> legend1, legend2,...
+
+Names of the series to be laid out as legends. If not selected, numbers will be used.
+
+=back
+
+=cut
+
