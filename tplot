@@ -18,6 +18,7 @@ if (defined $options{"h"} || not( defined $options{r})) {
 }
 
 
+
 # Get row numbers
 my @col_nums   = split(",", $options{r});
 my $num_series = scalar @col_nums;
@@ -61,6 +62,7 @@ if (defined $options{s}) {
 
 # Read data
 my @matrix = ();
+my @labels = ();
 my $global_max = -1e32; 
 my $global_min = 1e32;
 my $global_abs_max;
@@ -69,6 +71,11 @@ for (<>) {
     chomp $_;
 
     my @items = split(" ", $_);
+
+    # Read Labelss
+    if (defined $options{b}) {
+        push @labels, $items[$options{b}-1];
+    }
 
     for (my $i=0;$i<$num_series; $i++ ) {
 
@@ -275,7 +282,14 @@ my $step = max(1, int($num_obs / 10) );
 for ($i=0; $i<$num_obs; $i=$i+$step) {
     my $index = getGridIndex($i, 0, $num_obs-1, $width);
     substr($xaxis, $index , 1) = "|";
-    substr($xtick_label, $index , 4) = sprintf("%-4d", $i);
+
+    if (defined $options{b}) {
+        my $lab = $labels[$i];
+        my $len = length($lab);
+        substr($xtick_label, $index , $len) = $lab;
+    } else {
+        substr($xtick_label, $index , 4) = sprintf("%-4d", $i);
+    }
 }
 
 print $indent." ". $xaxis."\n";
@@ -354,7 +368,7 @@ tplot - A simple terminal plotting tool
 
 =head1 SYNOPSIS
 
-tplot -r col1[,col2,..] [-s hieght,width] [-y min,max] [-f format] [-l legend1, legend2, ..] [file]
+tplot -r col1[,col2,..] [-b col] [-s hieght,width] [-y min,max] [-f format] [-l legend1, legend2, ..] [-h] [file]
 
 
 =head1 OPTIONS
@@ -363,13 +377,13 @@ The following options are supported:
 
 =over 12
 
-=item B<-h>
-
-Print this help message.
-
 =item B<-r> col1[,col2,..]
 
-List the column numbers to be included in the plot.
+List the column numbers that are to be included in the plot.
+
+=item B<-b> col
+
+Column to be used for labels.
 
 =item B<-s> height,width
 
@@ -377,7 +391,7 @@ The size of the plotting area. Default height is 15 and default width is 100.
 
 =item B<-y> min,max
 
-min and max of the y axis.
+Set min and max of the y axis.
 
 =item B<-f> format
 
@@ -385,7 +399,12 @@ Format of the y-axis label. If not selected, it will be decided based on the max
 
 =item B<-l> legend1, legend2,...
 
-Names of the series to be laid out as legends. If not selected, numbers will be used.
+Legends for each series. If not selected, numbers will be used.
+
+=item B<-h>
+
+Print this help message.
+
 
 =back
 
