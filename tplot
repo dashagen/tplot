@@ -157,6 +157,9 @@ my @crossing = ();
 
 for (my $s=0; $s < $num_series; $s++) {
 
+    my $last_r_index;
+    my $last_c_index;
+
     for (my $i=0; $i<$num_obs; $i++) {
 
         next if ( $matrix[$s][$i] > $global_max or $matrix[$s][$i] < $global_min ); 
@@ -181,16 +184,12 @@ for (my $s=0; $s < $num_series; $s++) {
         #Fill between points
         if ($i > 0){
 
-            print "$r_index, $c_index\n";
-            print "$last_r_index, $last_c_index\n";
-
-            my $c_w = $c_index - $last_c_index;
-
+            my $c_w = $last_c_index - $c_index;
             my $r_w = $last_r_index - $r_index;
 
-            for (my $mv_c_indx = $last_c_index +1; $mv_c_indx < $c_index; $mv_c_indx++) {
+            for (my $mv_c_indx = $last_c_index+1; $mv_c_indx < $c_index; $mv_c_indx++) {
 
-                my $new_r_indx = int($last_r_index + ($mv_c_indx - $last_c_index)/ $c_w * $r_w);
+                my $new_r_indx = int($last_r_index + ($mv_c_indx - $last_c_index)/ $c_w * $r_w + 0.5);
 
                 if (defined $screen[$new_r_indx][$mv_c_indx]) {
 
@@ -207,8 +206,8 @@ for (my $s=0; $s < $num_series; $s++) {
 
 
         # Record last point indeces
-        my $last_r_index = $r_index;
-        my $last_c_index = $c_index;
+        $last_r_index = $r_index;
+        $last_c_index = $c_index;
     }
 }
 
