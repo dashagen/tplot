@@ -161,7 +161,7 @@ for (my $s=0; $s < $num_series; $s++) {
 
         next if ( $matrix[$s][$i] > $global_max or $matrix[$s][$i] < $global_min ); 
 
-        my $r_index = $height - 1 - getGridIndex($matrix[$s][$i], $global_min, $global_max, $height);
+        my $r_index = getGridIndex($matrix[$s][$i], $global_min, $global_max, $height);
 
         my $c_index = getGridIndex($i, 0, $num_obs-1, $width);
 
@@ -180,7 +180,7 @@ for (my $s=0; $s < $num_series; $s++) {
 }
 
 # Zero line
-my $zero_index = $height - 1 - getGridIndex(0, $global_min, $global_max, $height);
+my $zero_index = getGridIndex(0, $global_min, $global_max, $height);
 
 
 
@@ -222,16 +222,16 @@ print "\n";
 
 
 # Print main plot
-for (my $r=0; $r<$height; $r++) {
+for (my $r = $height-1; $r>=0; $r--) {
 
     # Ytick mark label 
     print color "white";
 
     if ( $r == 0 ) {
-        print $ytick_label_max." ";
+        print $ytick_label_min." ";
 
     } elsif ( $r == $height - 1) {
-        print $ytick_label_min." ";
+        print $ytick_label_max." ";
 
     } elsif ( $r == $zero_index) {
         print " "x8 . "0 ";
