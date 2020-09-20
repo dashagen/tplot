@@ -8,7 +8,7 @@ use List::Util qw[min max];
 $0 =~/.*\/(.*)/;
 
 my %options= ();
-getopts("b:r:f:s:y:l:h",\%options);
+getopts("b:r:f:s:y:l:hc",\%options);
 
 
 ########################################################
@@ -154,6 +154,7 @@ if (defined $options{f}) {
 # Fill up screen matrix 
 my @screen   = ();
 my @crossing = ();
+my @point_type = ();
 
 for (my $s=0; $s < $num_series; $s++) {
 
@@ -180,9 +181,11 @@ for (my $s=0; $s < $num_series; $s++) {
             $screen[$r_index][$c_index] = $s;
         }
 
+        $point_type[$r_index][$c_index] = 1;
+
 
         #Fill between points
-        if ($i > 0){
+        if ($i > 0 && defined $options{c}){
 
             my $c_w = $last_c_index - $c_index;
             my $r_w = $last_r_index - $r_index;
@@ -201,6 +204,8 @@ for (my $s=0; $s < $num_series; $s++) {
                 } else {
                     $screen[$new_r_indx][$mv_c_indx] = $s;
                 }
+
+                $point_type[$new_r_indx][$mv_c_indx] = 0;
             }
         }
 
@@ -286,7 +291,11 @@ for (my $r = $height-1; $r>=0; $r--) {
 
             } else {
                 print color $colors[$dot_series_num];
-                print "o";
+                if ($point_type[$r][$c] == 1) {
+                    print "o";
+                } else {
+                    print ".";
+                }
             }
 
         } elsif ( $r == $zero_index and $c == 0 ) {
