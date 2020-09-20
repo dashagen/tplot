@@ -8,7 +8,7 @@ use List::Util qw[min max];
 $0 =~/.*\/(.*)/;
 
 my %options= ();
-getopts("b:k:f:s:y:l:hc",\%options);
+getopts("b:k:f:s:y:l:hce",\%options);
 
 
 ########################################################
@@ -68,6 +68,8 @@ if (defined $options{s}) {
 ########################################################
 my @matrix = ();
 my @labels = ();
+my @headers = ();
+
 my $global_max = -1e32; 
 my $global_min = 1e32;
 my $global_abs_max;
@@ -91,6 +93,13 @@ for (<>) {
         if ($value > $global_max) { $global_max = $value }; 
         if ($value < $global_min) { $global_min = $value };
     }
+}
+
+
+# Extract headers if there are any
+if ( defined $options{e} ) {
+    @headers = map { shift @{$_} } @matrix;
+    shift @labels;
 }
 
 my $num_obs = scalar @{$matrix[0]};
@@ -242,6 +251,7 @@ if (@legends > $num_series ) {
 
 if ( $leg_start_point <0) { $leg_start_point = 0 };
 
+
 print $indent." "." "x ($leg_start_point);
 
 for ( 1 .. $num_series) {
@@ -250,6 +260,9 @@ for ( 1 .. $num_series) {
 
     if (defined $legends[$_-1]) {
         print "o - $legends[$_-1] ";
+
+    } elsif ( defined $options{e} ) {
+        print "o - $headers[$_-1] ";
 
     } else {
         print "o - $_ ";
