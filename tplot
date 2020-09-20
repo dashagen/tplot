@@ -11,12 +11,15 @@ my %options= ();
 getopts("b:r:f:s:y:l:h",\%options);
 
 
+########################################################
+#  Preparation                                         #
+########################################################
+
 # Exit if -h is typed or -r is not used
 if (defined $options{"h"} || not( defined $options{r})) {
 
    pod2usage(-verbose=>2, -noperldoc=>1);
 }
-
 
 
 # Get row numbers
@@ -60,7 +63,9 @@ if (defined $options{s}) {
 }
 
 
-# Read data
+########################################################
+#   Read Data                                          #
+########################################################
 my @matrix = ();
 my @labels = ();
 my $global_max = -1e32; 
@@ -89,7 +94,6 @@ for (<>) {
 }
 
 my $num_obs = scalar @{$matrix[0]};
-
 
 
 # Handling y-axis option -y to determin final min,max 
@@ -180,9 +184,10 @@ my $zero_index = $height - 1 - getGridIndex(0, $global_min, $global_max, $height
 
 
 
-##########################
-##  Plot(print)      #### 
-##########################
+
+########################################################
+#   Plot (print)                                       #
+########################################################
 print "\n";
 
 my @colors = ('bright_blue', 'bright_red', 'yellow', 'bright_cyan', 'bright_green');
@@ -297,9 +302,9 @@ print $indent." ". $xtick_label."\n";
 
 
 
-####################################
-#  subroutines ####################
-####################################
+########################################################
+#   SUBROUTINES                                        #
+########################################################
  
 sub formatLabel {
     my ($format, $value) = @_;
