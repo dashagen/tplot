@@ -162,7 +162,9 @@ if (defined $options{f}) {
 
 
 
-# Fill up screen matrix 
+########################################################
+#   Fill up screen matrix                              #
+########################################################
 my @screen   = ();
 my @crossing = ();
 my @point_type = ();
@@ -240,37 +242,6 @@ print "\n";
 
 my @colors = ('bright_blue', 'bright_red', 'yellow', 'bright_cyan', 'bright_green');
 
-
-# Print Legends
-my $leg_start_point;
-
-if (@legends > $num_series ) {
-    $leg_start_point = $width - ( length(join("", @legends[0..$num_series-1])) + 5 * $num_series) + 1;
-
-} else {
-    $leg_start_point = $width - ( length(join("", @legends)) + 5 * $num_series + ($num_series - @legends)) + 1;
-}
-
-if ( $leg_start_point <0) { $leg_start_point = 0 };
-
-
-print $indent." "." "x ($leg_start_point);
-
-for ( 1 .. $num_series) {
-
-    print color $colors[$_-1];
-
-    if (defined $legends[$_-1]) {
-        print "o - $legends[$_-1] ";
-
-    } elsif ( defined $options{e} ) {
-        print "o - $headers[$_-1] ";
-
-    } else {
-        print "o - $_ ";
-    }
-}
-print "\n";
 
 
 # Print main plot
@@ -357,6 +328,27 @@ print $indent." ". $xaxis."\n";
 print $indent." ". $xtick_label."\n";
 
 
+# Print Legends
+print "\n";
+print $indent." [ ";
+
+for ( 1 .. $num_series) {
+
+    print color $colors[$_-1];
+
+    if (defined $legends[$_-1]) {
+        print "o - $legends[$_-1] ";
+
+    } elsif ( defined $options{e} ) {
+        print "o - $headers[$_-1] ";
+
+    } else {
+        print "o - $_ ";
+    }
+}
+print color "white";
+print "]\n";
+
 
 ########################################################
 #   SUBROUTINES                                        #
@@ -396,16 +388,6 @@ sub getGridIndex {
     my $index = int(  ($value - $min + $half_buck_size ) / ($max - $min) * ($num_grid-1) ); 
 
     return( $index );
-}
-
-
-sub getRefValue {
-
-    my ($index, $min, $max, $num_grid) = @_;
-
-    my $value = $index / ($num_grid - 1) * ($max - $min) + $min;
-
-    return( $value );
 }
 
 
