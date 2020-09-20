@@ -8,22 +8,22 @@ use List::Util qw[min max];
 $0 =~/.*\/(.*)/;
 
 my %options= ();
-getopts("b:r:f:s:y:l:hc",\%options);
+getopts("b:k:f:s:y:l:hc",\%options);
 
 
 ########################################################
 #  Preparation                                         #
 ########################################################
 
-# Exit if -h is typed or -r is not used
-if (defined $options{"h"} || not( defined $options{r})) {
+# Exit if -h is typed or -k is not used
+if (defined $options{"h"} || not( defined $options{k})) {
 
    pod2usage(-verbose=>2, -noperldoc=>1);
 }
 
 
 # Get row numbers
-my @col_nums   = split(",", $options{r});
+my @col_nums   = split(",", $options{k});
 my $num_series = scalar @col_nums;
 
 
@@ -414,7 +414,7 @@ tplot - A simple terminal plotting tool
 
 =head1 SYNOPSIS
 
-tplot -r col1[,col2,..] [-b col] [-s hieght,width] [-y min,max] [-f format] [-l legend1, legend2, ..] [-h] [file]
+tplot -k col1[,col2,..] [-b col] [-c] [-s hieght,width] [-y min,max] [-f format] [-l legend1, legend2, ..] [-h] [file]
 
 
 =head1 OPTIONS
@@ -423,13 +423,17 @@ The following options are supported:
 
 =over 12
 
-=item B<-r> col1[,col2,..]
+=item B<-k> col1[,col2,..]
 
 List the column numbers that are to be included in the plot.
 
 =item B<-b> col
 
 Column to be used for labels.
+
+=item B<-c>
+
+Plot dots between points
 
 =item B<-s> height,width
 
