@@ -74,10 +74,18 @@ my $global_max = -1e32;
 my $global_min = 1e32;
 my $global_abs_max;
 
+my $row = 0;
+
 for (<>) {
     chomp $_;
 
     my @items = split(" ", $_);
+
+    if ($row == 0 && $options{e}) {
+        @headers = map { $items[$_-1] } @col_nums;
+        $row++;
+        next;
+    }
 
     # Read Labelss
     if (defined $options{b}) {
@@ -95,12 +103,6 @@ for (<>) {
     }
 }
 
-
-# Extract headers if there are any
-if ( defined $options{e} ) {
-    @headers = map { shift @{$_} } @matrix;
-    shift @labels;
-}
 
 my $num_obs = scalar @{$matrix[0]};
 
