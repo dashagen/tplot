@@ -280,7 +280,7 @@ for (my $r = $height-1; $r>=0; $r--) {
                 if ($point_type[$r][$c] == 1) {
                     print "o";
                 } else {
-                    print ".";
+                    print "―";
                 }
             }
 
