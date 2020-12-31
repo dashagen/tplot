@@ -8,7 +8,7 @@ use List::Util qw[min max];
 $0 =~/.*\/(.*)/;
 
 my %options= ();
-getopts("b:k:f:s:y:l:hce",\%options);
+getopts("b:k:f:s:y:l:hpe",\%options);
 
 
 ########################################################
@@ -198,7 +198,7 @@ for (my $s=0; $s < $num_series; $s++) {
 
 
         #Fill between points
-        if ($i > 0 && defined $options{c}){
+        unless ($i <=0 || defined $options{p}){
 
             my $c_w = $last_c_index - $c_index;
             my $r_w = $last_r_index - $r_index;
@@ -280,7 +280,7 @@ for (my $r = $height-1; $r>=0; $r--) {
                 if ($point_type[$r][$c] == 1) {
                     print "o";
                 } else {
-                    print "―";
+                    print "-";
                 }
             }
 
@@ -411,7 +411,7 @@ tplot - A simple terminal plotting tool
 
 =head1 SYNOPSIS
 
-tplot -k col1[,col2,..] [-b col] [-c] [-s hieght,width] [-y min,max] [-f format] [-l legend1, legend2, ..] [-h] [file]
+tplot -k col1[,col2,..] [-b col] [-p] [-s hieght,width] [-y min,max] [-f format] [-l legend1, legend2, ..] [-h] [file]
 
 
 =head1 OPTIONS
@@ -428,9 +428,9 @@ List the column numbers that are to be included in the plot.
 
 Column to be used for labels.
 
-=item B<-c>
+=item B<-p>
 
-Plot dots between points
+Plot points only, no connecting lines.
 
 =item B<-s> height,width
 
