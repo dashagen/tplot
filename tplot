@@ -305,27 +305,52 @@ for (my $r = $height-1; $r>=0; $r--) {
 print color "white";
 
 
+# ---------------------------
 # Print x-axis and tick marks
+# ---------------------------
+
+#initialize xaxis
 my $xaxis = "-" x $width;
-my $xtick_label = " " x $width;
 
-my $step = max(1, int($num_obs / 10) );
+#initialzie xaxis tickmark labels
+my @xtick_label = ();
+$xtick_label[0] = " " x $width;
+$xtick_label[1] = " " x $width;
 
+my $xlabel_layer = 0;  #xtick lable layer indicator
+
+my $step = max(1, int($num_obs/10) ); #number of x labels
+
+#Loop through each xaxis label
 for ($i=0; $i<$num_obs; $i=$i+$step) {
+
+    # get index
     my $index = getGridIndex($i, 0, $num_obs-1, $width);
+
+    # mark tick mark
     substr($xaxis, $index , 1) = "|";
 
+    # get label
+    my $lab;
+
     if (defined $options{b}) {
-        my $lab = $labels[$i];
-        my $len = length($lab);
-        substr($xtick_label, $index , $len) = $lab;
+        $lab = $labels[$i];
     } else {
-        substr($xtick_label, $index , 4) = sprintf("%-4d", $i);
+        $lab = sprintf("%-4d", $i);
     }
+
+    # mark label
+    if ( substr($xtick_label[$xlabel_layer], $index-1, 1) ne " ") {
+        $xlabel_layer = 1 - $xlabel_layer;
+    }
+
+    substr($xtick_label[$xlabel_layer], $index , length($lab)) = $lab;
 }
 
+# print xaxis and labels
 print $indent." ". $xaxis."\n";
-print $indent." ". $xtick_label."\n";
+print $indent." ". $xtick_label[0]."\n";
+print $indent." ". $xtick_label[1]."\n";
 
 
 # Print Legends
