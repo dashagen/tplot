@@ -66,7 +66,7 @@ if (defined $options{s}) {
 ########################################################
 #   Read Data                                          #
 ########################################################
-my @matrix = ();
+my @datamatrix = ();
 my @labels = ();
 my @headers = ();
 
@@ -96,7 +96,7 @@ for (<>) {
 
         my $value = $items[ $col_nums[$i] - 1 ];
 
-        push @{$matrix[$i]}, $value;
+        push @{$datamatrix[$i]}, $value;
 
         if ($value > $global_max) { $global_max = $value }; 
         if ($value < $global_min) { $global_min = $value };
@@ -104,7 +104,7 @@ for (<>) {
 }
 
 
-my $num_obs = scalar @{$matrix[0]};
+my $num_obs = scalar @{$datamatrix[0]};
 
 
 # Handling y-axis option -y to determin final min,max 
@@ -176,10 +176,10 @@ for (my $s=0; $s < $num_series; $s++) {
 
     for (my $i=0; $i<$num_obs; $i++) {
 
-        next if ( $matrix[$s][$i] > $global_max or $matrix[$s][$i] < $global_min ); 
+        next if ( $datamatrix[$s][$i] > $global_max or $datamatrix[$s][$i] < $global_min ); 
 
         # Fill the point
-        my $r_index = getGridIndex($matrix[$s][$i], $global_min, $global_max, $height);
+        my $r_index = getGridIndex($datamatrix[$s][$i], $global_min, $global_max, $height);
         my $c_index = getGridIndex($i, 0, $num_obs-1, $width);
 
         if (defined $screen[$r_index][$c_index]) {
