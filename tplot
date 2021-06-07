@@ -176,29 +176,29 @@ for (my $s=0; $s < $num_series; $s++) {
 
     for (my $i=0; $i<$num_obs; $i++) {
 
-        next if ( $datamatrix[$s][$i] > $global_max or $datamatrix[$s][$i] < $global_min ); 
-
         # Fill the point
         my $r_index = getGridIndex($datamatrix[$s][$i], $global_min, $global_max, $height);
         my $c_index = getGridIndex($i, 0, $num_obs-1, $width);
 
-        if (defined $screen[$r_index][$c_index]) {
+        if ($r_index < $height && $r_index >= 0)  {
+            if (defined $screen[$r_index][$c_index]) {
 
-            if ($s > $screen[$r_index][$c_index]) {
+                if ($s > $screen[$r_index][$c_index]) {
 
-                $screen[$r_index][$c_index]   = $s;
-                $crossing[$r_index][$c_index] = $s;
+                    $screen[$r_index][$c_index]   = $s;
+                    $crossing[$r_index][$c_index] = $s;
+                }
+
+            } else {
+                $screen[$r_index][$c_index] = $s;
             }
 
-        } else {
-            $screen[$r_index][$c_index] = $s;
+            $point_type[$r_index][$c_index] = 1;
         }
-
-        $point_type[$r_index][$c_index] = 1;
 
 
         #Fill between points
-        unless ($i <=0 || defined $options{p}){
+        if ($i >0 && not(defined $options{p}) && defined $last_c_index && defined $last_r_index ){
 
             my $c_w = $last_c_index - $c_index;
             my $r_w = $last_r_index - $r_index;
@@ -207,18 +207,21 @@ for (my $s=0; $s < $num_series; $s++) {
 
                 my $new_r_indx = int($last_r_index + ($mv_c_indx - $last_c_index)/ $c_w * $r_w + 0.5);
 
-                if (defined $screen[$new_r_indx][$mv_c_indx]) {
+                if ($new_r_indx < $height && $new_r_indx >= 0) {
 
-                    if ($s > $screen[$new_r_indx][$mv_c_indx]) {
+                    if (defined $screen[$new_r_indx][$mv_c_indx]) {
 
+                        if ($s > $screen[$new_r_indx][$mv_c_indx]) {
+
+                            $screen[$new_r_indx][$mv_c_indx] = $s;
+                        }
+
+                    } else {
                         $screen[$new_r_indx][$mv_c_indx] = $s;
                     }
 
-                } else {
-                    $screen[$new_r_indx][$mv_c_indx] = $s;
+                    $point_type[$new_r_indx][$mv_c_indx] = 0;
                 }
-
-                $point_type[$new_r_indx][$mv_c_indx] = 0;
             }
         }
 
