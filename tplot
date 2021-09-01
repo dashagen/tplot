@@ -4,6 +4,7 @@ use Term::ANSIColor;
 use Getopt::Std;
 use Pod::Usage;
 use List::Util qw[min max];
+use Scalar::Util qw(looks_like_number);
 
 $0 =~/.*\/(.*)/;
 
@@ -81,7 +82,16 @@ for (<>) {
 
     my @items = split(" ", $_);
 
-    if ($row == 0 && $options{e}) {
+    # Determine if first row are headers 
+    if ($row == 0) {
+        my $num_non_numeric;
+
+        $num_non_numeric+=not(looks_like_number($_)) for @items[map {$_-1} @col_nums];
+
+        if ($num_non_numeric>0) { $options{e} = "";};
+    }
+
+    if ($row ==0 && defined $options{e}) {
         @headers = map { $items[$_-1] } @col_nums;
         $row++;
         next;
@@ -367,7 +377,7 @@ for ( 1 .. $num_series) {
     if (defined $legends[$_-1]) {
         print "o - $legends[$_-1] ";
 
-    } elsif ( defined $options{e} ) {
+    } elsif ( defined $options{e}) {
         print "o - $headers[$_-1] ";
 
     } else {
