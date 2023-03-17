@@ -9,7 +9,7 @@ use Scalar::Util qw(looks_like_number);
 $0 =~/.*\/(.*)/;
 
 my %options= ();
-getopts("b:k:f:s:y:l:hpe",\%options);
+getopts("b:k:f:s:y:l:hpev:",\%options);
 
 
 ########################################################
@@ -74,6 +74,9 @@ my @headers = ();
 my $global_max = -1e32; 
 my $global_min = 1e32;
 my $global_abs_max;
+
+# vertical line column index
+my $vl_index = 9999;
 
 my $row = 0;
 
@@ -171,6 +174,14 @@ if (defined $options{f}) {
 }
 
 
+# Find vertical line index
+if (defined $options{v}) {
+    for (my $row=0; $row<@labels; $row++) {
+        if ($labels[$row] eq $options{v}) {
+            $vl_index = getGridIndex($row, 0, $num_obs-1, $width);
+        }
+    }
+}
 
 ########################################################
 #   Fill up screen matrix                              #
@@ -179,11 +190,14 @@ my @screen   = ();
 my @crossing = ();
 my @point_type = ();
 
+
+# loop through series
 for (my $s=0; $s < $num_series; $s++) {
 
     my $last_r_index;
     my $last_c_index;
 
+    # loop through observations
     for (my $i=0; $i<$num_obs; $i++) {
 
         # Fill the point
@@ -243,7 +257,7 @@ for (my $s=0; $s < $num_series; $s++) {
 }
 
 # Zero line
-my $zero_index = getGridIndex(0, $global_min, $global_max, $height);
+my $y_zero_index = getGridIndex(0, $global_min, $global_max, $height);
 
 
 
@@ -269,7 +283,7 @@ for (my $r = $height-1; $r>=0; $r--) {
     } elsif ( $r == $height - 1) {
         print $ytick_label_max." ";
 
-    } elsif ( $r == $zero_index) {
+    } elsif ( $r == $y_zero_index) {
         print " "x8 . "0 ";
     }
     else {
@@ -297,14 +311,17 @@ for (my $r = $height-1; $r>=0; $r--) {
                 }
             }
 
-        } elsif ( $r == $zero_index and $c == 0 ) {
+        } elsif ( $r == $y_zero_index and $c == 0 ) {
             print color "white";
             print "+";
-        } elsif ( $r == $zero_index and $c%2 == 0) {
+        } elsif ( $r == $y_zero_index and $c%2 == 0) {
             print color "bright_black";
             print "-";
         } elsif ( $c == 0 ) {
             print color "white";
+            print "|";
+        } elsif ( $c == $vl_index ) {
+            print color "bright_black";
             print "|";
         } else {
             print " ";
