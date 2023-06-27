@@ -299,11 +299,11 @@ for (my $r = $height-1; $r>=0; $r--) {
             my $dot_series_num = $screen[$r][$c];
 
             if ( defined $crossing[$r][$c] ) {
-                print color $colors[$dot_series_num];
+                print color $colors[$dot_series_num % @colors -1];
                 print "x";
 
             } else {
-                print color $colors[$dot_series_num];
+                print color $colors[$dot_series_num % @colors -1];
                 if ($point_type[$r][$c] == 1) {
                     print "o";
                 } else {
@@ -389,7 +389,7 @@ print $indent." [ ";
 
 for ( 1 .. $num_series) {
 
-    print color $colors[$_-1];
+    print color $colors[$_ % @colors - 1];
 
     if (defined $legends[$_-1]) {
         print "o - $legends[$_-1] ";
