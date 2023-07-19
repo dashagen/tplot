@@ -111,8 +111,8 @@ for (<>) {
 
         push @{$datamatrix[$i]}, $value;
 
-        if ($value > $global_max) { $global_max = $value }; 
-        if ($value < $global_min) { $global_min = $value };
+        if (looks_like_number($value) && $value > $global_max) { $global_max = $value }; 
+        if (looks_like_number($value) && $value < $global_min) { $global_min = $value };
     }
 }
 
@@ -201,6 +201,8 @@ for (my $s=0; $s < $num_series; $s++) {
     for (my $i=0; $i<$num_obs; $i++) {
 
         # Fill the point
+        next if $datamatrix[$s][$i] eq ".";
+
         my $r_index = getGridIndex($datamatrix[$s][$i], $global_min, $global_max, $height);
         my $c_index = getGridIndex($i, 0, $num_obs-1, $width);
 
