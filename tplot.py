@@ -62,6 +62,7 @@ def plot_ascii(data, height=13, width=100, y_range=None, legends=None):
         '\033[36m',  # Cyan
     ]
     RESET = '\033[0m'  # Reset color
+    GRAY = '\033[90m'  # Gray color
 
     # Get dimensions of the data
     num_series, num_points = data.shape
@@ -71,6 +72,14 @@ def plot_ascii(data, height=13, width=100, y_range=None, legends=None):
 
     # Create empty plot grid (store both character and color)
     screen = [[(" ", None) for _ in range(width)] for _ in range(height)]
+
+    # Determine the row index for the Y-axis value of 0
+    zero_row = get_grid_index(0, global_min, global_max, height)
+
+    # Draw horizontal line at zero on the grid with gray color
+    if 0 <= zero_row < height:
+        for col in range(width):
+            screen[height - zero_row - 1][col] = ("-", GRAY)
 
     # Plot each data series
     for series_idx in range(num_series):
@@ -84,7 +93,7 @@ def plot_ascii(data, height=13, width=100, y_range=None, legends=None):
             # Place marker on grid with color
             if 0 <= row < height and 0 <= col < width:
                 char, existing_color = screen[height - row - 1][col]
-                if char == " ":
+                if char == " " or char == "-":
                     screen[height - row - 1][col] = ("o", color)
                 else:
                     screen[height - row - 1][col] = ("x", color)
@@ -97,7 +106,7 @@ def plot_ascii(data, height=13, width=100, y_range=None, legends=None):
     print("\n")
     for i in range(height):
         print(f"{y_labels[i]} | ", end="")
-        for char, color in screen[i]:
+        for j, (char, color) in enumerate(screen[i]):
             if color:
                 print(f"{color}{char}{RESET}", end="")
             else:
